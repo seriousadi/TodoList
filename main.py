@@ -1,11 +1,106 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from wtforms import StringField, validators, FieldList, SubmitField
+from flask_wtf import FlaskForm
 
+db = SQLAlchemy()
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///todolist.db"
+app.secret_key = "asdfasdfsafoiqwejru2q0u5c094rxdflkadsjflk"
+db.init_app(app)
 
 
-@app.route("/")
+# wtf form
+class TodolistForm(FlaskForm):
+    title = StringField("list_title", validators=[validators.DataRequired()])
+    list_data = FieldList(StringField('List Data', [validators.DataRequired()]))
+    submit = SubmitField("Add")
+
+
+# todolist Model
+
+
+class Todolist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, unique=True, nullable=False)
+    list_items = db.Column(db.String, nullable=False)
+
+
+# creating todolist database
+with app.app_context():
+    db.create_all()
+
+
+@app.route("/", methods=['POST', 'GET'])
 def home_page():
-    return render_template("home_page.html")
+    # reading database to check for existing list and then passing those lists to the page to show existing lists
+    todolist_data = db.session.execute(db.select(Todolist).order_by()).scalars()
+
+    form = TodolistForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+
+        data = request.form
+        print(data)
+
+        # checking if that list already exists gives none or the list if it exists
+        todo_list_check = db.session.execute(
+            db.select(Todolist).filter_by(title=data['title'])).scalar_one_or_none()
+        # using todo_list_check to decide to save or not to save the list
+        if todo_list_check is None:
+            list_to_save = Todolist(
+                title=data['title'],
+                list_items=data['list_data']
+            )
+            db.session.add(list_to_save)
+            db.session.commit()
+        else:
+            flash("This list already exists")
+
+        return redirect(url_for('home_page'))
+
+    return render_template("home_page.html", todolist_data=todolist_data, form=form)
+
+
+@app.route("/deletelist/<int:list_id>")
+def delete_list(list_id):
+    # checking if that list already exists gives none or the list if it exists
+    todo_list = db.session.execute(db.select(Todolist).filter_by(id=list_id)).scalar_one_or_none()
+
+    if todo_list is None:
+        flash("This todo list doesn't exist")
+    else:
+        flash("successfully deleted that todolist")
+        db.session.delete(todo_list)
+        db.session.commit()
+
+    return redirect(url_for('home_page'))
+
+
+@app.route("/editlist/<int:list_id>", methods=['POST','GET'])
+def edit_list(list_id):
+    # checking if that list already exists gives none or the list if it exists
+    todo_list = db.session.execute(db.select(Todolist).filter_by(id=list_id)).scalar_one_or_none()
+    form = TodolistForm()
+    if request.method == 'POST':
+        print(request.form)
+        if todo_list is None:
+            flash("This todo list doesn't exist")
+        else:
+            todo_list.title = request.form['title']
+            todo_list.list_items = request.form['list_data']
+            db.session.commit()
+            flash("Successfully updated the data")
+            return redirect(url_for('home_page'))
+
+    if todo_list is None:
+        flash("This todo list doesn't exist")
+    else:
+        form = TodolistForm()
+        form.title = todo_list.title
+        form.list_data = todo_list.list_items
+        return render_template("edit.html", form=form, id=list_id)
+
 
 
 if __name__ == '__main__':
