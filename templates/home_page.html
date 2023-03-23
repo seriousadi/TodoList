@@ -8,19 +8,61 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
-<form method="post" action="/">
-    {{ form.csrf_token }}
-   {{ form.title.label }} {{ form.title }}
-    {{ form.list_data.label }} {{form.list_data}}
-    {{form.submit }}
-</form>
 
-{% for n in todolist_data %}
-<div>
-    <h1>{{n.title}}</h1>
-    <p>{{n.list_items}}</p>
-    <a href="{{url_for('delete_list',list_id=n.id)}}">DElete</a>
-    <a href="{{url_for('edit_list',list_id=n.id)}}">Edit</a>
+<div class="todoList container-fluid">
+    <form method="post" action="{{url_for('home_page')}}">
+        <div class="container-fluid text-center">
+            <div class="row">
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <input name="title" class="card-title" placeholder="Title">
+                            <input name="subtitle" class="card-subtitle mb-2 text-muted" placeholder="subtitle">
+                            <ul  id="listItems" class="list-group list-group-flush">
+                                <li><input name="listItem"  class="list-group-item" placeholder="Items"></li>
+                            </ul>
+                            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                <a class="addMore btn btn-outline-info">+ Add</a>
+                            </div>
+                            <button class="btn btn-outline-info" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
 </div>
-{% endfor %}
+
+
+<div class="container-fluid text-center">
+    <div class="row">
+        {% for n in todolist_data %}
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{n.title}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{n.subtitle}}</h6>
+                    <ul class="list-group list-group-flush">
+                        {% set list1 = n.list_items.split('@sdsplitk') %}
+                        {% for item in list1 %}
+
+
+                        <li class="list-group-item">{{item}}</li>
+                        {% endfor %}
+                        <li class="list-group-item">A second item</li>
+                        <li class="list-group-item">A third item</li>
+                    </ul>
+                    <div class="btn-group" role="group" aria-label="Basic outlined example">
+                        <a href="{{url_for('delete_list',list_id=n.id)}}" class="btn btn-outline-info">Delete it</a>
+                        <a href="{{url_for('edit_list',list_id=n.id)}}" class="btn btn-outline-info ">View</a>
+                        <a href="{{url_for('edit_list',list_id=n.id)}}" class="btn btn-outline-info ">Edit This</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
 {% include "footer.html" %}
