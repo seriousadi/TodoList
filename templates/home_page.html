@@ -11,15 +11,17 @@
 
 <div class="todoList container-fluid">
     <form method="post" action="{{url_for('home_page')}}">
+        {{ form.csrf_token }}
         <div class="container-fluid text-center">
             <div class="row">
                 <div class="col">
                     <div class="card" style="width: 18rem;">
                         <div class="card-body">
-                            <input name="title" class="card-title" placeholder="Title">
-                            <input name="subtitle" class="card-subtitle mb-2 text-muted" placeholder="subtitle">
-                            <ul  id="listItems" class="list-group list-group-flush">
-                                <li><input name="listItem"  class="list-group-item" placeholder="Items"></li>
+                            {{form.title(placeholder="Title")}}
+                            {{form.subtitle(placeholder="Subtitle")}}
+
+                            <ul id="listItems" class="list-group list-group-flush">
+                                <li>{{form.list_items(placeholder="Items")}}</li>
                             </ul>
                             <div class="btn-group" role="group" aria-label="Basic outlined example">
                                 <a class="addMore btn btn-outline-info">+ Add</a>
@@ -50,8 +52,6 @@
 
                         <li class="list-group-item">{{item}}</li>
                         {% endfor %}
-                        <li class="list-group-item">A second item</li>
-                        <li class="list-group-item">A third item</li>
                     </ul>
                     <div class="btn-group" role="group" aria-label="Basic outlined example">
                         <a href="{{url_for('delete_list',list_id=n.id)}}" class="btn btn-outline-info">Delete it</a>

@@ -1,11 +1,33 @@
 {% include "header.html" %}
 
 <form method="post" action="{{url_for('edit_list',list_id=id)}}">
-    {{ form.csrf_token }}
-    {{ form.title.label }} {{ form.title }}
-    {{ form.list_data.label }} {{form.list_data}}
-    {{form.submit }}
+
+
+    <div class="col">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+
+                <h5 class="card-title">{{todolist_data.title}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{todolist_data.subtitle}}</h6>
+
+                <ul  class="list-group list-group-flush">
+                    {% set list1 = todolist_data.list_items.split('@sdsplitk') %}
+                    {% for item in list1 %}
+
+
+                    <li class="list-group-item">{{item}}</li>
+                    {% endfor %}
+                </ul>
+                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                    <a href="{{url_for('delete_list',list_id=todolist_data.id)}}" class="btn btn-outline-info">Delete
+                        it</a>
+                    <button type="submit" class="btn btn-outline-info ">Save</button>
+                    <a href="{{url_for('edit_list',list_id=todolist_data.id)}}" class="btn btn-outline-info ">Edit
+                        This</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </form>
-
-
 {% include "footer.html" %}

@@ -14,7 +14,8 @@ db.init_app(app)
 # wtf form
 class TodolistForm(FlaskForm):
     title = StringField("list_title", validators=[validators.DataRequired()])
-    list_data = TextAreaField('List Data', [validators.DataRequired()])
+    subtitle = StringField('Subtitle', [validators.DataRequired()])
+    list_items = StringField('List Data', [validators.DataRequired()])
     submit = SubmitField("Add")
 
 
@@ -40,7 +41,7 @@ def home_page():
 
     form = TodolistForm()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate_on_submit:
         data = request.form
         item = ""
         for n in data.getlist('listItem'):
@@ -82,23 +83,32 @@ def edit_list(list_id):
     # checking if that list already exists gives none or the list if it exists
     todo_list = db.session.execute(db.select(Todolist).filter_by(id=list_id)).scalar_one_or_none()
     form = TodolistForm()
+
+    # saving edited data to database
     if request.method == 'POST':
-        print(request.form)
+        data = request.form
+        item = ""
+        for n in data.getlist('listItem'):
+            item = item + "@sdsplitk" + n
+        print(data)
+
         if todo_list is None:
             flash("This todo list doesn't exist")
         else:
             todo_list.title = request.form['title']
-            todo_list.list_items = request.form['list_data']
+            todo_list.subtitle = request.form['subtitle']
+            todo_list.list_items = item
             db.session.commit()
             flash("Successfully updated the data")
-            return redirect(url_for('home_page'))
+        return redirect(url_for('home_page'))
+
     if todo_list is None:
         flash("This todo list doesn't exist")
     else:
         form = TodolistForm()
         form.title = todo_list.title
         form.list_data = todo_list.list_items
-        return render_template("edit.html", form=form, id=list_id)
+        return render_template("edit.html", form=form, todolist_data=todo_list, id=list_id)
 
 
 if __name__ == '__main__':
