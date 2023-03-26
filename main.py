@@ -86,15 +86,16 @@ def edit_list(list_id):
 
     # saving edited data to database
     if request.method == 'POST':
+        print(request.values)
         data = request.form
         item = ""
         for n in data.getlist('listItem'):
             item = item + "@sdsplitk" + n
-        print(data)
 
         if todo_list is None:
             flash("This todo list doesn't exist")
         else:
+
             todo_list.title = request.form['title']
             todo_list.subtitle = request.form['subtitle']
             todo_list.list_items = item
@@ -105,10 +106,10 @@ def edit_list(list_id):
     if todo_list is None:
         flash("This todo list doesn't exist")
     else:
-        form = TodolistForm()
-        form.title = todo_list.title
-        form.list_data = todo_list.list_items
-        return render_template("edit.html", form=form, todolist_data=todo_list, id=list_id)
+        form.title.value = todo_list.title
+        form.list_items.value = todo_list.list_items
+
+    return render_template("edit.html", form=form, todolist_data=todo_list, id=list_id)
 
 
 if __name__ == '__main__':
