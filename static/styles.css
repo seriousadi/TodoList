@@ -1,3 +1,15 @@
 body{
 padding:10rem 5rem 10rem;
 }
+input:focus {
+   outline:none;
+   border:none;
+
+}
+input{
+border:none;
+}
+
+li{
+list-style-type:none;
+}

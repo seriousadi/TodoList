@@ -12,20 +12,22 @@
                     <input name="subtitle" value="{{todolist_data.subtitle}}"/>
                 </h6>
 
-                <ul class="list-group list-group-flush">
+                <ul id="listItems" class="list-group list-group-flush">
                     {% set list1 = todolist_data.list_items.split('@sdsplitk') %}
                     {% for item in list1 %}
+                    {% if (item|length) > 0 %}
 
-
-                    <li class="list-group-item"><input name="listItem"  value="{{item}}"/></li>
+                    <li class="list-group-item"><input name="listItem" value="{{item}}"/></li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                     <a href="{{url_for('delete_list',list_id=todolist_data.id)}}" class="btn btn-outline-info">Delete
                         it</a>
+                    <a class="addMore btn btn-outline-info">+ Add</a>
                     <button type="submit" class="btn btn-outline-info ">Save</button>
-                    <a href="{{url_for('edit_list',list_id=todolist_data.id)}}" class="btn btn-outline-info ">Edit
-                        This</a>
+
+
                 </div>
             </div>
         </div>

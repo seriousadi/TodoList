@@ -9,7 +9,7 @@
 {% endif %}
 {% endwith %}
 
-<div class="todoList container-fluid">
+<div class="todoList container-fluid ">
     <form method="post" action="{{url_for('home_page')}}">
         {{ form.csrf_token }}
         <div class="container-fluid text-center">
@@ -21,7 +21,7 @@
                             {{form.subtitle(placeholder="Subtitle")}}
 
                             <ul id="listItems" class="list-group list-group-flush">
-                                <li>{{form.list_items(placeholder="Items")}}</li>
+                                <li class="list-group-item">{{form.list_items(placeholder="Items")}}</li>
                             </ul>
                             <div class="btn-group" role="group" aria-label="Basic outlined example">
                                 <a class="addMore btn btn-outline-info">+ Add</a>
@@ -48,9 +48,10 @@
                     <ul class="list-group list-group-flush">
                         {% set list1 = n.list_items.split('@sdsplitk') %}
                         {% for item in list1 %}
-
+                        {% if (item|length) > 0 %}
 
                         <li class="list-group-item">{{item}}</li>
+                        {%endif%}
                         {% endfor %}
                     </ul>
                     <div class="btn-group" role="group" aria-label="Basic outlined example">
