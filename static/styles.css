@@ -1,6 +1,13 @@
 body{
-padding:10rem 5rem 10rem;
+padding:3rem 1rem 10rem;
 }
+
+/* TodoList adder*/
+
+.todoList{
+margin:0 0 4rem 0;
+}
+
 input:focus {
    outline:none;
    border:none;
@@ -13,3 +20,5 @@ border:none;
 li{
 list-style-type:none;
 }
+.col{
+margin:0 0 1rem 0;}

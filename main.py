@@ -14,7 +14,7 @@ db.init_app(app)
 # wtf form
 class TodolistForm(FlaskForm):
     title = StringField("list_title", validators=[validators.DataRequired()])
-    subtitle = StringField('Subtitle', [validators.DataRequired()])
+    subtitle = StringField('Subtitle')
     list_items = StringField('List Data', [validators.DataRequired()])
     submit = SubmitField("Add")
 
@@ -26,7 +26,7 @@ class Todolist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, unique=True, nullable=False)
     list_items = db.Column(db.String, nullable=False)
-    subtitle = db.Column(db.String, nullable=False)
+    subtitle = db.Column(db.String, nullable=True)
 
 
 # creating todolist database
@@ -60,8 +60,8 @@ def home_page():
             db.session.commit()
         else:
             flash("This list already exists")
-    #
-    # return redirect(url_for('home_page'))
+        #
+        return redirect(url_for('home_page'))
     return render_template("home_page.html", todolist_data=todolist_data, form=form)
 
 
@@ -81,27 +81,42 @@ def delete_list(list_id):
 @app.route("/editlist/<int:list_id>", methods=['POST', 'GET'])
 def edit_list(list_id):
     # checking if that list already exists gives none or the list if it exists
+
     todo_list = db.session.execute(db.select(Todolist).filter_by(id=list_id)).scalar_one_or_none()
     form = TodolistForm()
 
     # saving edited data to database
     if request.method == 'POST':
-        print(request.values)
-        data = request.form
-        item = ""
-        for n in data.getlist('listItem'):
-            item = item + "@sdsplitk" + n
+        if request.form['title'] == '':
+            flash("Title cannot be empty")
+            return redirect(url_for('edit_list', list_id=list_id))
 
-        if todo_list is None:
-            flash("This todo list doesn't exist")
+        checking_todolist = db.session.execute(
+            db.select(Todolist).filter_by(title=request.form['title'])).scalar_one_or_none()
+        can_add = False
+        if checking_todolist is None:
+            can_add = True
+        elif todo_list.title == checking_todolist.title and todo_list.id == checking_todolist.id:
+            can_add = True
         else:
+            can_add = False
+            flash("Todolist with that title already exists")
 
-            todo_list.title = request.form['title']
-            todo_list.subtitle = request.form['subtitle']
-            todo_list.list_items = item
-            db.session.commit()
-            flash("Successfully updated the data")
-        return redirect(url_for('home_page'))
+        if can_add:
+
+            data = request.form
+            item = ""
+            for n in data.getlist('listItem'):
+                item = item + "@sdsplitk" + n
+            if todo_list is None:
+                flash("This todo list doesn't exist")
+            else:
+                todo_list.title = request.form['title']
+                todo_list.subtitle = request.form['subtitle']
+                todo_list.list_items = item
+                db.session.commit()
+                flash("Successfully updated the data")
+            return redirect(url_for('home_page'))
 
     if todo_list is None:
         flash("This todo list doesn't exist")
