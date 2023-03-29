@@ -60,8 +60,9 @@ def home_page():
             db.session.commit()
         else:
             flash("This list already exists")
-        #
+
         return redirect(url_for('home_page'))
+
     return render_template("home_page.html", todolist_data=todolist_data, form=form)
 
 

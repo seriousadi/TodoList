@@ -48,12 +48,20 @@
                     <h6 class="card-subtitle mb-2 text-muted">{{n.subtitle}}</h6>
                     <ul class="list-group list-group-flush">
                         {% set list1 = n.list_items.split('@sdsplitk') %}
+
                         {% for item in list1 %}
                         {% if (item|length) > 0 %}
-
+                        {% if  loop.index0 < 2  %}
                         <li class="list-group-item">{{item}}</li>
+
+                        {% endif %}
+
                         {%endif%}
                         {% endfor %}
+                        {% if (list1|length) > 1 %}
+                        <li class="list-group-item"> .......... </li>
+
+                        {%endif%}
                     </ul>
                     <div class="btn-group" role="group" aria-label="Basic outlined example">
                         <a href="{{url_for('delete_list',list_id=n.id)}}" class="btn btn-outline-info">Delete</a>
